@@ -1,0 +1,7 @@
+test:
+  config:
+    a: b
+    c: 200
+  memes:
+  - name: doge
+    phrase: wow!

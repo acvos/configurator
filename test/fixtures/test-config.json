@@ -1,0 +1,14 @@
+{
+  "test": {
+    "config": {
+      "a": "b",
+      "c": 100
+    },
+    "memes": [
+      {
+        "name": "cat",
+        "phrase": "no!"
+      }
+    ]
+  }
+}
