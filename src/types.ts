@@ -9,6 +9,6 @@ export interface ConfigurationReader {
   read(source: any): Promise<Array<Dictionary<any>>>
 }
 
-export interface Deserializer {
+export interface FileFormat {
   parse(source: string): Dictionary<any>
 }

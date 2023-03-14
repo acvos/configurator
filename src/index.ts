@@ -1,18 +1,12 @@
 import deepmerge from "deepmerge"
-import { EnvDeserializer } from "./deserializers/env-deserializer"
-import { IniDeserializer } from "./deserializers/ini-deserializer"
-import { JsonDeserializer } from "./deserializers/json-deserializer"
-import { YamlDeserializer } from "./deserializers/yaml-deserializer"
 import { FileReader } from "./readers/file-reader"
 import { ObjectReader } from "./readers/object-reader"
-import { ConfigurationReader, Deserializer, Dictionary, Source } from "./types"
+import { ConfigurationReader, FileFormat, Dictionary, Source } from "./types"
 
 interface Config {
   readers?: Dictionary<ConfigurationReader>
-  fileFormats?: Dictionary<Deserializer>
+  fileFormats?: Dictionary<FileFormat>
 }
-
-const yamlDeserializer = new YamlDeserializer()
 
 export class Configurator {
   private readers: Dictionary<ConfigurationReader>
@@ -21,16 +15,7 @@ export class Configurator {
     this.readers = {
       ...readers,
       object: new ObjectReader(),
-      file: new FileReader({
-        deserializers: {
-          ...fileFormats,
-          ".json": new JsonDeserializer(),
-          ".yaml": yamlDeserializer,
-          ".yml": yamlDeserializer,
-          ".ini": new IniDeserializer(),
-          ".env": new EnvDeserializer()
-        }
-      })
+      file: new FileReader({ fileFormats })
     }
   }
 

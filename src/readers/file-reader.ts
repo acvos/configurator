@@ -1,23 +1,32 @@
 import fs from "fs"
 import path from "path"
 import { glob } from 'glob'
-import { ConfigurationReader, Deserializer, Dictionary } from "../types"
+import { JsonFileFormat } from "./file-formats/json"
+import { YamlFileFormat } from "./file-formats/yaml"
+import { ConfigurationReader, FileFormat, Dictionary } from "../types"
 
 interface Config {
-  deserializers: Dictionary<Deserializer>
+  fileFormats: Dictionary<FileFormat>
 }
 
 export class FileReader implements ConfigurationReader {
-  private deserializers: Dictionary<Deserializer>
+  private fileFormats: Dictionary<FileFormat>
 
-  constructor({ deserializers }: Config) {
-    this.deserializers = deserializers
+  constructor({ fileFormats }: Config) {
+    const yamlFileFormat = new YamlFileFormat()
+
+    this.fileFormats = {
+      ...fileFormats,
+      ".json": new JsonFileFormat(),
+      ".yaml": yamlFileFormat,
+      ".yml": yamlFileFormat
+    }
   }
 
   private readFile(fileName: string) {
     const extension = path.extname(fileName)
 
-    const parser = this.deserializers[extension]
+    const parser = this.fileFormats[extension]
     if (!parser) {
       throw new Error(`[Configurator] Unable to process file ${fileName}: unknown file type ${extension}`)
     }
