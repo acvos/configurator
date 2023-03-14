@@ -5,10 +5,11 @@ import { JsonDeserializer } from "./deserializers/json-deserializer"
 import { YamlDeserializer } from "./deserializers/yaml-deserializer"
 import { FileReader } from "./readers/file-reader"
 import { ObjectReader } from "./readers/object-reader"
-import { ConfigurationReader, Dictionary, Source } from "./types"
+import { ConfigurationReader, Deserializer, Dictionary, Source } from "./types"
 
 interface Config {
   readers?: Dictionary<ConfigurationReader>
+  fileFormats?: Dictionary<Deserializer>
 }
 
 const yamlDeserializer = new YamlDeserializer()
@@ -16,12 +17,13 @@ const yamlDeserializer = new YamlDeserializer()
 export class Configurator {
   private readers: Dictionary<ConfigurationReader>
 
-  constructor({ readers }: Config = {}) {
+  constructor({ readers = {}, fileFormats = {} }: Config = {}) {
     this.readers = {
       ...readers,
       object: new ObjectReader(),
       file: new FileReader({
         deserializers: {
+          ...fileFormats,
           ".json": new JsonDeserializer(),
           ".yaml": yamlDeserializer,
           ".yml": yamlDeserializer,
@@ -32,7 +34,7 @@ export class Configurator {
     }
   }
 
-  private getRider(type: string) {
+  private getReader(type: string) {
     const reader = this.readers[type]
     if (!reader) {
       throw new Error(`[Configurator] No reader found for configuration type '${type}'`)
@@ -43,7 +45,7 @@ export class Configurator {
 
   async resolve(layers: Array<Source>) {
     const raw = await Promise.all(layers.map(({ type, value }) =>
-      this.getRider(type).read(value)
+      this.getReader(type).read(value)
     ))
 
     const flattened = raw.reduce((acc, next) => acc.concat(next), [])

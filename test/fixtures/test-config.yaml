@@ -2,6 +2,7 @@ test:
   config:
     a: b
     c: 200
+    "{test.config.a}": AAAAAAAAAAAA
   memes:
   - name: doge
     phrase: wow!

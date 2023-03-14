@@ -2,7 +2,8 @@
   "test": {
     "config": {
       "a": "b",
-      "c": 100
+      "c": 100,
+      "{test.config.a}": "test"
     },
     "memes": [
       {
