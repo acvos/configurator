@@ -2,8 +2,8 @@ test:
   config:
     a: b
     c: 200
-    "{test.config.a}": AAAAAAAAAAAA
-    d: "{test.config.c}"
+    ref: ${test.config.c}
+    template: AAA-${test.config.c}-${test.config.a}
   memes:
   - name: doge
     phrase: wow!

@@ -3,7 +3,7 @@
     "config": {
       "a": "b",
       "c": 100,
-      "{test.config.a}": "test"
+      "ref": "test"
     },
     "memes": [
       {

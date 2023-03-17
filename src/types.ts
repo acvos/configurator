@@ -12,3 +12,15 @@ export interface ConfigurationReader {
 export interface FileFormat {
   parse(source: string): Dictionary<any>
 }
+
+export interface Descriptor {
+  resolve(path: Array<string>, context: Descriptor): any
+}
+
+export interface Compiler {
+  compile(input: any): Descriptor
+}
+
+export interface Instantiable<T> {
+  new (...args: Array<any>): T
+}

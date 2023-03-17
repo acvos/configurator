@@ -1,7 +1,8 @@
 import deepmerge from "deepmerge"
+import { ConfigurationCompiler } from "./compiler"
 import { FileReader } from "./readers/file-reader"
 import { ObjectReader } from "./readers/object-reader"
-import { ConfigurationReader, FileFormat, Dictionary, Source } from "./types"
+import { ConfigurationReader, FileFormat, Dictionary, Source, Descriptor } from "./types"
 
 interface Config {
   readers?: Dictionary<ConfigurationReader>
@@ -10,6 +11,8 @@ interface Config {
 
 export class Configurator {
   private readers: Dictionary<ConfigurationReader>
+  private compiler: ConfigurationCompiler
+  private container?: Descriptor
 
   constructor({ readers = {}, fileFormats = {} }: Config = {}) {
     this.readers = {
@@ -17,6 +20,7 @@ export class Configurator {
       object: new ObjectReader(),
       file: new FileReader({ fileFormats })
     }
+    this.compiler = new ConfigurationCompiler()
   }
 
   private getReader(type: string) {
@@ -28,16 +32,25 @@ export class Configurator {
     return reader
   }
 
-  async resolve(layers: Array<Source>) {
+  get(path: string) {
+    if (!this.container) {
+      return undefined
+    }
+
+    const fields = path.split(".")
+
+    return this.container.resolve(fields, this.container)
+  }
+
+  async load(layers: Array<Source>) {
     const raw = await Promise.all(layers.map(({ type, value }) =>
       this.getReader(type).read(value)
     ))
 
     const flattened = raw.reduce((acc, next) => acc.concat(next), [])
-
     const combined = deepmerge.all<Dictionary<any>>(flattened)
 
-    return combined
+    this.container = this.compiler.compile(combined)
   }
 }
 
