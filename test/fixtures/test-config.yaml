@@ -4,6 +4,7 @@ test:
     c: 200
     ref: ${test.config.c}
     template: AAA-${test.config.c}-${test.config.a}
+    env: ${env(BIRB)}
   memes:
   - name: doge
     phrase: wow!

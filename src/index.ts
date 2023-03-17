@@ -1,25 +1,36 @@
 import deepmerge from "deepmerge"
 import { ConfigurationCompiler } from "./compiler"
+import Container from "./container"
 import { FileReader } from "./readers/file-reader"
 import { ObjectReader } from "./readers/object-reader"
-import { ConfigurationReader, FileFormat, Dictionary, Source, Descriptor } from "./types"
+import { ConfigurationReader, FileFormat, Dictionary, Source, Func } from "./types"
 
 interface Config {
   readers?: Dictionary<ConfigurationReader>
   fileFormats?: Dictionary<FileFormat>
+  funcs?: Dictionary<Func>
+  environment?: Dictionary<any>
 }
 
 export class Configurator {
   private readers: Dictionary<ConfigurationReader>
   private compiler: ConfigurationCompiler
-  private container?: Descriptor
+  private funcs: Dictionary<(x: string) => any>
+  private container?: Container
 
-  constructor({ readers = {}, fileFormats = {} }: Config = {}) {
+  constructor({ readers = {}, fileFormats = {}, funcs = {}, environment }: Config = {}) {
     this.readers = {
       ...readers,
       object: new ObjectReader(),
       file: new FileReader({ fileFormats })
     }
+
+    const env = environment || process.env
+    this.funcs = {
+      ...funcs,
+      env: (x: string) => env[x]
+    }
+
     this.compiler = new ConfigurationCompiler()
   }
 
@@ -39,7 +50,7 @@ export class Configurator {
 
     const fields = path.split(".")
 
-    return this.container.resolve(fields, this.container)
+    return this.container.get(fields)
   }
 
   async load(layers: Array<Source>) {
@@ -50,7 +61,10 @@ export class Configurator {
     const flattened = raw.reduce((acc, next) => acc.concat(next), [])
     const combined = deepmerge.all<Dictionary<any>>(flattened)
 
-    this.container = this.compiler.compile(combined)
+    this.container = new Container({
+      root: this.compiler.compile(combined),
+      funcs: this.funcs
+    })
   }
 }
 

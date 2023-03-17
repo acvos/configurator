@@ -5,7 +5,7 @@ export class PrimitiveDescriptor implements Descriptor {
 
   resolve(fields: Array<string>) {
     if (fields.length > 0) {
-      throw new Error(`Getting deep field (${fields.join(".")}) from primitives is not supported`)
+      throw new Error(`[Configurator] Getting deep field (${fields.join(".")}) from primitives is not supported`)
     }
 
     return this.value
