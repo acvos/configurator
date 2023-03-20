@@ -6,7 +6,7 @@ interface Config {
 }
 
 export class Container implements Context {
-  private funcs: Dictionary<(x: string) => any>
+  private funcs: Dictionary<Func>
   private root: Descriptor
 
   constructor({ funcs, root }: Config) {
@@ -14,17 +14,19 @@ export class Container implements Context {
     this.root = root
   }
 
-  get(fields: Array<string>) {
+  get(path: Array<string>|string) {
+    const fields = path instanceof Array ? path : path.split(".")
+
     return this.root.resolve(fields, this)
   }
 
-  exec(funcName: string, arg: string) {
+  exec(funcName: string, args: Array<string>) {
     const func = this.funcs[funcName]
     if (!func) {
       throw new Error(`[Configurator] Unknown template function '${funcName}'`)
     }
 
-    return func(arg)
+    return func.apply(undefined, args)
   }
 }
 

@@ -9,8 +9,8 @@ const configurator = new Configurator({
 
 describe("environment", () => {
   it("can read environment variables", async () => {
-    await configurator.load([{ type: "file", value: "**/test-config.yaml" }])
+    const container = await configurator.load([{ type: "file", value: "**/test-config.yaml" }])
 
-    expect(configurator.get("test.config.env")).to.equal("AAAAAAAAAAAAAAAAAAAAAAAAA")
+    expect(container.get("test.config.env")).to.equal("AAAAAAAAAAAAAAAAAAAAAAAAA")
   })
 })

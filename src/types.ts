@@ -13,11 +13,11 @@ export interface FileFormat {
   parse(source: string): Dictionary<any>
 }
 
-export type Func = (x: string) => any
+export type Func = (...args: Array<string>) => any
 
 export interface Context {
-  get(path: Array<string>): any
-  exec(func: string, arg: string): any
+  get(path: Array<string>|string): any
+  exec(func: string, args: Array<string>): any
 }
 
 export interface Descriptor {

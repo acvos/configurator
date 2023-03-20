@@ -1,9 +1,9 @@
 import deepmerge from "deepmerge"
-import { ConfigurationCompiler } from "./compiler"
-import Container from "./container"
-import { FileReader } from "./readers/file-reader"
-import { ObjectReader } from "./readers/object-reader"
 import { ConfigurationReader, FileFormat, Dictionary, Source, Func } from "./types"
+import Container from "./container"
+import { Reader } from "./reader"
+import { ConfigurationCompiler } from "./compiler"
+import { importFunc } from "./funcs/import-func"
 
 interface Config {
   readers?: Dictionary<ConfigurationReader>
@@ -13,58 +13,38 @@ interface Config {
 }
 
 export class Configurator {
-  private readers: Dictionary<ConfigurationReader>
+  private reader: Reader
   private compiler: ConfigurationCompiler
   private funcs: Dictionary<(x: string) => any>
-  private container?: Container
 
   constructor({ readers = {}, fileFormats = {}, funcs = {}, environment }: Config = {}) {
-    this.readers = {
-      ...readers,
-      object: new ObjectReader(),
-      file: new FileReader({ fileFormats })
-    }
+    this.reader = new Reader({
+      sourceTypes: readers,
+      fileFormats
+    })
 
     const env = environment || process.env
     this.funcs = {
       ...funcs,
+      import: importFunc,
       env: (x: string) => env[x]
     }
 
     this.compiler = new ConfigurationCompiler()
   }
 
-  private getReader(type: string) {
-    const reader = this.readers[type]
-    if (!reader) {
-      throw new Error(`[Configurator] No reader found for configuration type '${type}'`)
-    }
-
-    return reader
-  }
-
-  get(path: string) {
-    if (!this.container) {
-      return undefined
-    }
-
-    const fields = path.split(".")
-
-    return this.container.get(fields)
-  }
-
   async load(layers: Array<Source>) {
-    const raw = await Promise.all(layers.map(({ type, value }) =>
-      this.getReader(type).read(value)
-    ))
+    const raw = await Promise.all(layers.map(x => this.reader.read(x)))
 
     const flattened = raw.reduce((acc, next) => acc.concat(next), [])
     const combined = deepmerge.all<Dictionary<any>>(flattened)
 
-    this.container = new Container({
+    const container = new Container({
       root: this.compiler.compile(combined),
       funcs: this.funcs
     })
+
+    return container
   }
 }
 

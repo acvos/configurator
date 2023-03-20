@@ -11,9 +11,9 @@ const testConfig = {
 
 describe("Javascript object reader", () => {
   it("can use POJOs as configuration", async () => {
-    await configurator.load([{ type: "object", value: testConfig }])
+    const container = await configurator.load([{ type: "object", value: testConfig }])
 
-    expect(configurator.get("DOGE")).to.equal("WOW")
-    expect(configurator.get("birb")).to.equal("AAAAAAAAAAAAAAAAAAAAAAAA")
+    expect(container.get("DOGE")).to.equal("WOW")
+    expect(container.get("birb")).to.equal("AAAAAAAAAAAAAAAAAAAAAAAA")
   })
 })

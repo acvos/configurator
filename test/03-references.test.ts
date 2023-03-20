@@ -5,8 +5,8 @@ const configurator = new Configurator()
 
 describe("references", () => {
   it("can resolve internal references", async () => {
-    await configurator.load([{ type: "file", value: "**/test-config.yaml" }])
+    const container = await configurator.load([{ type: "file", value: "**/test-config.yaml" }])
 
-    expect(configurator.get("test.config.ref")).to.equal(configurator.get("test.config.c"))
+    expect(container.get("test.config.ref")).to.equal(container.get("test.config.c"))
   })
 })

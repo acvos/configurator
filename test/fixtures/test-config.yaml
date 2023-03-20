@@ -8,3 +8,11 @@ test:
   memes:
   - name: doge
     phrase: wow!
+  service:
+    wow:
+      class: ${import(test/fixtures/wow-service.js)}
+      args: {}
+    doge:
+      class: ${import(test/fixtures/doge-service.js)}
+      args:
+        wow: ${instance(services.wow)}

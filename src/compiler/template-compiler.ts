@@ -4,7 +4,7 @@ import { ReferenceDescriptor } from "./descriptors/reference-descriptor"
 import { TemplateDescriptor } from "./descriptors/template-descriptor"
 
 export class TemplateCompiler implements Compiler {
-  private templateRegex = /\$\{([a-zA-Z0-9-_\.\(\)]*)\}/g
+  private templateRegex = /\$\{([a-zA-Z0-9-_=%@\.\(\)\/\\\,\+\*\&\$\!\^\s]*)\}/g
   private funcTemplate = /^(.*)\((.*)\)$/
 
   private createResolver(input: any) {
@@ -16,7 +16,7 @@ export class TemplateCompiler implements Compiler {
 
     const [_, func, arg] = matches
 
-    return new FuncDescriptor(func, arg)
+    return new FuncDescriptor(func, arg.split(",").map(x => x.trim()))
   }
 
   compile(input: any) {
