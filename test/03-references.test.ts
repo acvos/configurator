@@ -3,7 +3,7 @@ import { Configurator } from "../src"
 
 const configurator = new Configurator()
 
-describe("references", () => {
+describe("References", () => {
   it("can resolve internal references", async () => {
     const container = await configurator.load([{ type: "file", value: "**/test-config.yaml" }])
 

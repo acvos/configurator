@@ -7,7 +7,7 @@ const configurator = new Configurator({
   }
 })
 
-describe("environment", () => {
+describe("Environment", () => {
   it("can read environment variables", async () => {
     const container = await configurator.load([{ type: "file", value: "**/test-config.yaml" }])
 

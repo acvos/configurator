@@ -3,7 +3,7 @@ import { Configurator } from "../src"
 
 const configurator = new Configurator()
 
-describe("templates", () => {
+describe("Templates", () => {
   it("can evaluate reference-based templates", async () => {
     const container = await configurator.load([{ type: "file", value: "**/test-config.yaml" }])
 

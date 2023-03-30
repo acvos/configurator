@@ -4,6 +4,7 @@ import Container from "./container"
 import { Reader } from "./reader"
 import { ConfigurationCompiler } from "./compiler"
 import { importFunc } from "./funcs/import-func"
+import { SchemaBuilder } from "./schema/schema-builder"
 
 interface Config {
   readers?: Dictionary<ConfigurationReader>
@@ -45,6 +46,10 @@ export class Configurator {
     })
 
     return container
+  }
+
+  createSchema() {
+    return new SchemaBuilder()
   }
 }
 

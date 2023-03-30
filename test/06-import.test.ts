@@ -8,7 +8,7 @@ const testConfig = {
   doge: "wow"
 }
 
-describe("import", () => {
+describe("Import", () => {
   it("can read environment variables", async () => {
     const container = await configurator.load([{ type: "object", value: testConfig }])
 

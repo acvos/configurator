@@ -24,6 +24,15 @@ export interface Descriptor {
   resolve(path: Array<string>, context: Context): any
 }
 
+export interface ValidationResponse {
+  valid: boolean
+  comment: string
+}
+
+export interface Schema {
+  validate(input: any): ValidationResponse
+}
+
 export interface Compiler {
   compile(input: any): Descriptor
 }
