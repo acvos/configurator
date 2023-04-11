@@ -1,10 +1,11 @@
 import deepmerge from "deepmerge"
-import { ConfigurationReader, FileFormat, Dictionary, Source, Func } from "./types"
+import { ConfigurationReader, FileFormat, Dictionary, Source, Func, Schema } from "./types"
 import Container from "./container"
 import { Reader } from "./reader"
 import { ConfigurationCompiler } from "./compiler"
 import { importFunc } from "./funcs/import-func"
 import { SchemaBuilder } from "./schema/schema-builder"
+import { AnyType } from "./schema/field-types/any-type"
 
 interface Config {
   readers?: Dictionary<ConfigurationReader>
@@ -34,14 +35,14 @@ export class Configurator {
     this.compiler = new ConfigurationCompiler()
   }
 
-  async load(layers: Array<Source>) {
+  async load(layers: Array<Source>, schema: Schema = new AnyType("")) {
     const raw = await Promise.all(layers.map(x => this.reader.read(x)))
 
     const flattened = raw.reduce((acc, next) => acc.concat(next), [])
     const combined = deepmerge.all<Dictionary<any>>(flattened)
 
     const container = new Container({
-      root: this.compiler.compile(combined),
+      root: this.compiler.compile(combined, schema),
       funcs: this.funcs
     })
 

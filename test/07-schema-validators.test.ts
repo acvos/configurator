@@ -11,14 +11,27 @@ const schema = configurator
     .end()
   .product()
 
-// const testConfig = {
-//   test_service: "${import(test/fixtures/echo.js)}",
-//   doge: "wow"
-// }
+const expectValid = async (configs: Array<any>) => {
+  for (const x of configs) {
+    const res = await configurator.load([{ type: "object", value: x }], schema)
+    expect(res).to.be.an("object")
+  }
+}
 
-describe("Schema validators", () => {
+const expectInvalid = async (configs: Array<any>) => {
+  for (const x of configs) {
+    try {
+      await configurator.load([{ type: "object", value: x }], schema)
+      expect(true).to.be.false
+    } catch (error: any) {
+      expect(error.message).to.match(/validation/i)
+    }
+  }
+}
+
+describe("Schema validation", () => {
   it("can validate data types", async () => {
-    const validSchemas = [{
+    await expectValid([{
       version: 1,
       memes: { doge: "wow", birb: "AAAAAAAAAAAAAAAAAAAA" }
     }, {
@@ -27,60 +40,35 @@ describe("Schema validators", () => {
     }, {
       version: 0.5,
       memes: { doge: "wow", birb: "AAAAAAAAAAAAAAAAAAAA" }
-    }]
+    }])
 
-    for (const x of validSchemas) {
-      const res = schema.validate(x)
-      expect(res.valid).to.be.true
-    }
-
-    const invalidSchemas = [{
+    await expectInvalid([{
       version: "1.2.3",
       memes: { doge: "wow", birb: "AAAAAAAAAAAAAAAAAAAA" }
-    }]
-
-    for (const x of invalidSchemas) {
-      const res = schema.validate(x)
-      expect(res.valid).to.be.false
-    }
+    }])
   })
 
   it("respects required fields", async () => {
-    const validSchemas = [{
+    await expectValid([{
       version: 1,
       memes: { doge: "wow" }
-    }]
+    }])
 
-    for (const x of validSchemas) {
-      const res = schema.validate(x)
-      expect(res.valid).to.be.true
-    }
-
-    const invalidSchemas = [{
+    await expectInvalid([{
       memes: { doge: "wow", birb: "AAAAAAAAAAAAAAAAAAAA" }
     }, {
       version: 1
-    }]
-
-    for (const x of invalidSchemas) {
-      const res = schema.validate(x)
-      expect(res.valid).to.be.false
-    }
+    }])
   })
 
   it("doesn't allow undescribed fields", async () => {
-    const invalidSchemas = [{
+    await expectInvalid([{
       version: 1,
       memes: { doge: "wow", birb: "AAAAAAAAAAAAAAAAAAAA" },
       ohno: "ohno!"
     }, {
       version: 1,
       memes: { doge: "wow", birb: "AAAAAAAAAAAAAAAAAAAA", ohno: "ohno!" }
-    }]
-
-    for (const x of invalidSchemas) {
-      const res = schema.validate(x)
-      expect(res.valid).to.be.false
-    }
+    }])
   })
 })

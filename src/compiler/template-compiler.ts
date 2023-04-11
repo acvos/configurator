@@ -1,4 +1,4 @@
-import { Compiler } from "../types"
+import { Compiler, Schema } from "../types"
 import { FuncDescriptor } from "./descriptors/func-descriptor"
 import { ReferenceDescriptor } from "./descriptors/reference-descriptor"
 import { TemplateDescriptor } from "./descriptors/template-descriptor"
@@ -19,7 +19,7 @@ export class TemplateCompiler implements Compiler {
     return new FuncDescriptor(func, arg.split(",").map(x => x.trim()))
   }
 
-  compile(input: any) {
+  compile(input: any, schema: Schema) {
     const matches = <Array<string>>input.match(this.templateRegex)
     if (matches[0] === input) {
       return this.createResolver(input)

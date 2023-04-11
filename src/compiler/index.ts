@@ -1,4 +1,4 @@
-import { Compiler } from "../types"
+import { Compiler, Schema } from "../types"
 import { ArrayDescriptor } from "./descriptors/array-descriptor"
 import { ObjectDescriptor } from "./descriptors/object-descriptor"
 import { PrimitiveDescriptor } from "./descriptors/primitive-descriptor"
@@ -12,19 +12,19 @@ export class ConfigurationCompiler implements Compiler {
   private primitiveCompiler: Compiler = new LeafCompiler(PrimitiveDescriptor)
   private templateCompiler: Compiler = new TemplateCompiler()
 
-  compile(input: any) {
+  compile(input: any, schema: Schema) {
     if (input instanceof Array) {
-      return this.arrayCompiler.compile(input)
+      return this.arrayCompiler.compile(input, schema)
     }
 
     if (typeof input === "object" && input !== null) {
-      return this.objectCompiler.compile(input)
+      return this.objectCompiler.compile(input, schema)
     }
 
     if (typeof input === "string" && input.includes("${")) {
-      return this.templateCompiler.compile(input)
+      return this.templateCompiler.compile(input, schema)
     }
 
-    return this.primitiveCompiler.compile(input)
+    return this.primitiveCompiler.compile(input, schema)
   }
 }

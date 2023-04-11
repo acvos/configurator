@@ -1,9 +1,9 @@
-import { Compiler, Descriptor, Instantiable } from "../types"
+import { Compiler, Descriptor, Instantiable, Schema } from "../types"
 
 export class LeafCompiler implements Compiler {
   constructor(private nodeClass: Instantiable<Descriptor>) {}
 
-  compile(input: any) {
-    return new this.nodeClass(input)
+  compile(input: any, schema: Schema) {
+    return new this.nodeClass(schema.validate(input))
   }
 }

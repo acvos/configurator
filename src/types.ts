@@ -1,5 +1,9 @@
 export type Dictionary<T> = { [key: string]: T }
 
+export interface Instantiable<T> {
+  new (...args: Array<any>): T
+}
+
 export interface Source {
   type: string
   value: any
@@ -24,19 +28,11 @@ export interface Descriptor {
   resolve(path: Array<string>, context: Context): any
 }
 
-export interface ValidationResponse {
-  valid: boolean
-  comment: string
-}
-
 export interface Schema {
-  validate(input: any): ValidationResponse
+  getChild(key: string): Schema
+  validate(input: any): any
 }
 
 export interface Compiler {
-  compile(input: any): Descriptor
-}
-
-export interface Instantiable<T> {
-  new (...args: Array<any>): T
+  compile(input: any, schema: Schema): Descriptor
 }
