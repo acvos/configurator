@@ -35,7 +35,7 @@ export class Configurator {
     this.compiler = new ConfigurationCompiler()
   }
 
-  async load(layers: Array<Source>, schema: Schema = new AnyType("")) {
+  async loadAll(layers: Array<Source>, schema: Schema = new AnyType("")) {
     const raw = await Promise.all(layers.map(x => this.reader.read(x)))
 
     const flattened = raw.reduce((acc, next) => acc.concat(next), [])
@@ -43,6 +43,17 @@ export class Configurator {
 
     const container = new Container({
       root: this.compiler.compile(combined, schema),
+      funcs: this.funcs
+    })
+
+    return container
+  }
+
+  async load(source: Source, schema: Schema = new AnyType("")) {
+    const config = await this.reader.read(source)
+
+    const container = new Container({
+      root: this.compiler.compile(config, schema),
       funcs: this.funcs
     })
 
