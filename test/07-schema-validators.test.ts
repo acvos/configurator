@@ -13,7 +13,7 @@ const schema = configurator
 
 const expectValid = async (configs: Array<any>) => {
   for (const x of configs) {
-    const res = await configurator.loadAll([{ type: "object", value: x }], schema)
+    const res = await configurator.load([{ type: "object", value: x }], schema)
     expect(res).to.be.an("object")
   }
 }
@@ -21,7 +21,7 @@ const expectValid = async (configs: Array<any>) => {
 const expectInvalid = async (configs: Array<any>) => {
   for (const x of configs) {
     try {
-      await configurator.loadAll([{ type: "object", value: x }], schema)
+      await configurator.load([{ type: "object", value: x }], schema)
       expect(true).to.be.false
     } catch (error: any) {
       expect(error.message).to.match(/validation/i)

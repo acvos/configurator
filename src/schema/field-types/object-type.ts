@@ -1,14 +1,20 @@
 import { Dictionary, Schema } from "../../types"
 
+interface Config {
+  required: boolean
+}
+
 export class ObjectType implements Schema {
-  constructor(readonly name: string, private fields: Dictionary<Schema>, private required: boolean) {}
+  private fields: Dictionary<Schema> = {}
+
+  constructor(readonly name: string, private config: Config) {}
 
   addField(name: string, field: Schema) {
     this.fields[name] = field
   }
 
   validate(input: any) {
-    if (this.required && !input) {
+    if (this.config.required && !input) {
       throw new Error(`Validation error: ${this.name} is required, but ${input} value provided`)
     }
 

@@ -10,7 +10,7 @@ const testConfig = {
 
 describe("Import", () => {
   it("can read environment variables", async () => {
-    const container = await configurator.loadAll([{ type: "object", value: testConfig }])
+    const container = await configurator.load([{ type: "object", value: testConfig }])
 
     const service = container.get('test_service')
     expect(service("such much")).to.equal("such much")

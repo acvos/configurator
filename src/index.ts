@@ -4,7 +4,7 @@ import Container from "./container"
 import { Reader } from "./reader"
 import { ConfigurationCompiler } from "./compiler"
 import { importFunc } from "./funcs/import-func"
-import { SchemaBuilder } from "./schema/schema-builder"
+import { ParameterBuilder } from "./schema/parameter-builder"
 import { AnyType } from "./schema/field-types/any-type"
 
 interface Config {
@@ -35,9 +35,9 @@ export class Configurator {
     this.compiler = new ConfigurationCompiler()
   }
 
-  async loadAll(layers: Array<Source>, schema: Schema = new AnyType("")) {
+  async load(config: Array<Source>|Source, schema: Schema = new AnyType("")) {
+    const layers = config instanceof Array ? config : [config]
     const raw = await Promise.all(layers.map(x => this.reader.read(x)))
-
     const flattened = raw.reduce((acc, next) => acc.concat(next), [])
     const combined = deepmerge.all<Dictionary<any>>(flattened)
 
@@ -49,19 +49,8 @@ export class Configurator {
     return container
   }
 
-  async load(source: Source, schema: Schema = new AnyType("")) {
-    const config = await this.reader.read(source)
-
-    const container = new Container({
-      root: this.compiler.compile(config, schema),
-      funcs: this.funcs
-    })
-
-    return container
-  }
-
   createSchema() {
-    return new SchemaBuilder()
+    return new ParameterBuilder()
   }
 }
 

@@ -1,10 +1,14 @@
 import { Schema } from "../../types"
 
+interface Config {
+  required: boolean
+}
+
 export class StringType implements Schema {
-  constructor(readonly name: string, private required: boolean) {}
+  constructor(readonly name: string, private config: Config) {}
 
   validate(input: any) {
-    if (this.required && !input) {
+    if (this.config.required && !input) {
       throw new Error(`Field ${this.name} is required, but ${input} value provided`)
     }
 

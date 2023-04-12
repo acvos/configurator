@@ -1,30 +1,36 @@
 import { Compiler, Schema } from "../types"
+import { map } from "../map"
 import { ArrayDescriptor } from "./descriptors/array-descriptor"
 import { ObjectDescriptor } from "./descriptors/object-descriptor"
+import { LazyDescriptor } from "./descriptors/lazy-descriptor"
 import { PrimitiveDescriptor } from "./descriptors/primitive-descriptor"
-import { CompositeCompiler } from "./composite-compiler"
-import { LeafCompiler } from "./leaf-compiler"
 import { TemplateCompiler } from "./template-compiler"
 
 export class ConfigurationCompiler implements Compiler {
-  private arrayCompiler: Compiler = new CompositeCompiler(this, ArrayDescriptor)
-  private objectCompiler: Compiler = new CompositeCompiler(this, ObjectDescriptor)
-  private primitiveCompiler: Compiler = new LeafCompiler(PrimitiveDescriptor)
-  private templateCompiler: Compiler = new TemplateCompiler()
+  private templateCompiler = new TemplateCompiler()
 
   compile(input: any, schema: Schema) {
-    if (input instanceof Array) {
-      return this.arrayCompiler.compile(input, schema)
-    }
-
-    if (typeof input === "object" && input !== null) {
-      return this.objectCompiler.compile(input, schema)
-    }
-
+    // template substitutions go their own way
     if (typeof input === "string" && input.includes("${")) {
-      return this.templateCompiler.compile(input, schema)
+      return this.templateCompiler.compile(input)
     }
 
-    return this.primitiveCompiler.compile(input, schema)
+    const validated = schema.validate(input)
+
+    const content: any = (typeof validated === "object" && validated !== null)
+      ? map((x, key) => this.compile(x, schema.getChild(key)), validated)
+      : validated
+
+    if (content instanceof Array) {
+      return new ArrayDescriptor(content)
+    }
+    if (typeof content === "function") {
+      return new LazyDescriptor(content)
+    }
+    if (typeof content === "object") {
+      return new ObjectDescriptor(content)
+    }
+
+    return new PrimitiveDescriptor(content)
   }
 }

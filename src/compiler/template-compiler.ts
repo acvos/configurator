@@ -1,9 +1,8 @@
-import { Compiler, Schema } from "../types"
 import { FuncDescriptor } from "./descriptors/func-descriptor"
 import { ReferenceDescriptor } from "./descriptors/reference-descriptor"
 import { TemplateDescriptor } from "./descriptors/template-descriptor"
 
-export class TemplateCompiler implements Compiler {
+export class TemplateCompiler {
   private templateRegex = /\$\{([a-zA-Z0-9-_=%@\.\(\)\/\\\,\+\*\&\$\!\^\s]*)\}/g
   private funcTemplate = /^(.*)\((.*)\)$/
 
@@ -19,7 +18,7 @@ export class TemplateCompiler implements Compiler {
     return new FuncDescriptor(func, arg.split(",").map(x => x.trim()))
   }
 
-  compile(input: any, schema: Schema) {
+  compile(input: any) {
     const matches = <Array<string>>input.match(this.templateRegex)
     if (matches[0] === input) {
       return this.createResolver(input)

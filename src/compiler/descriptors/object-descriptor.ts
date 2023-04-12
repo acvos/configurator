@@ -9,6 +9,6 @@ export class ObjectDescriptor implements Descriptor {
       return this.content[field].resolve(rest, context)
     }
 
-    return map(x => x.resolve([],context), this.content)
+    return map(x => x.resolve([], context), this.content)
   }
 }

@@ -36,3 +36,8 @@ export interface Schema {
 export interface Compiler {
   compile(input: any, schema: Schema): Descriptor
 }
+
+export interface SchemaBuilder {
+  end(): SchemaBuilder
+  product(): Schema
+}

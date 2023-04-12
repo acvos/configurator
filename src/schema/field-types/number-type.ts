@@ -1,11 +1,15 @@
 import isNumber  from "is-number"
 import { Schema } from "../../types"
 
+interface Config {
+  required: boolean
+}
+
 export class NumberType implements Schema {
-  constructor(readonly name: string, private required: boolean) {}
+  constructor(readonly name: string, private config: Config) {}
 
   validate(input: any) {
-    if (this.required && !input) {
+    if (this.config.required && !input) {
       throw new Error(`Validation error: ${this.name} is required, but ${input} value provided`)
     }
 

@@ -1,10 +1,21 @@
 import { Schema } from "../../types"
 
-export class ArrayType implements Schema {
-  constructor(readonly name: string, private items: Schema, private required: boolean) {}
+interface Config {
+  required: boolean
+  itemType?: Schema
+}
 
-  validate(input: Array<any>): Array<any> {
-    if (this.required && !input) {
+export class ArrayType implements Schema {
+  private items: Array<Schema> = []
+
+  constructor(readonly name: string, private config: Config) {}
+
+  addItem(field: Schema) {
+    this.items.push(field)
+  }
+
+  validate(input: Array<any>) {
+    if (this.config.required && !input) {
       throw new Error(`Validation error: ${this.name} is required, but ${input} value provided`)
     }
 
@@ -16,6 +27,6 @@ export class ArrayType implements Schema {
   }
 
   getChild(key: string): Schema {
-    return this.items
+    return this.items[parseInt(key)] || this.config.itemType
   }
 }
