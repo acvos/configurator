@@ -3,7 +3,7 @@ import { ArrayType } from "./array-type"
 import { ClassType } from "./class-type"
 import { FunctionType } from "./function-type"
 
-export class ServiceType implements Schema {
+export class InstanceType implements Schema {
   private args = new ArrayType("args", { required: true })
   private factory = new FunctionType("factory", { required: false })
   private klass = new ClassType("class", { required: false })

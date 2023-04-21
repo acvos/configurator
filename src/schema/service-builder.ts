@@ -2,14 +2,14 @@ import { SchemaBuilder } from "../types"
 import { AnyType } from "./field-types/any-type"
 import { NumberType } from "./field-types/number-type"
 import { ObjectType } from "./field-types/object-type"
-import { ServiceType } from "./field-types/service-type"
+import { InstanceType } from "./field-types/instance-type"
 import { StringType } from "./field-types/string-type"
 import { ParameterBuilder } from "./parameter-builder"
 
 export class ServiceBuilder implements SchemaBuilder {
-  private context: ServiceType
+  private context: InstanceType
 
-  constructor(context: ServiceType, private parent?: SchemaBuilder) {
+  constructor(context: InstanceType, private parent?: SchemaBuilder) {
     this.context = context
   }
 

@@ -1,3 +1,4 @@
+import { expect } from "chai"
 import { Configurator } from "../src"
 
 const configurator = new Configurator()
@@ -12,7 +13,7 @@ class Meme {
 
 const schema = configurator
   .createSchema()
-    .addService("doge")
+    .addInstance("doge")
       .addStringArgument()
       .addStringArgument()
     .end()
@@ -30,6 +31,8 @@ describe("DI instance management", () => {
       }
     }}, schema)
 
-    console.log(container.get("doge"))
+    const text = container.get("doge").explain()
+
+    expect(text).to.equal("I am DOGE. I WOW!")
   })
 })
