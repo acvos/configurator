@@ -1,7 +1,7 @@
 {
   "name": "@acvos/configurator",
   "description": "Configuration provider for back-end services and CLI apps",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "scripts": {
     "build": "rimraf dist && tsc -d",
     "prepublishOnly": "npm run build",
